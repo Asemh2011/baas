@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="0; url=./المدرسه تطبيق باصات.html">
+  <title>نظام إدارة حركة الباصات</title>
+</head>
+<body>
+  <p>جارٍ فتح التطبيق…</p>
+  <script>
+    window.location.replace('./المدرسه تطبيق باصات.html');
+  </script>
+</body>
+</html>
