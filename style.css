@@ -1,0 +1,304 @@
+/* ============================================================
+   نظام إدارة حركة الباصات المدرسية - مدارس الأمل الحديثة
+   ملف التنسيقات الرئيسي
+   ============================================================ */
+
+/* ==================== إعدادات عامة ==================== */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Cairo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+}
+
+/* ==================== شريط التمرير المخصص ==================== */
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #94a3b8;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b;
+}
+
+/* لمتصفح فايرفوكس */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #94a3b8 #f1f5f9;
+}
+
+/* ==================== الجداول ==================== */
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+table tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* ==================== الأزرار ==================== */
+
+button {
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s ease-in-out;
+    border: none;
+    outline: none;
+}
+
+button:active {
+    transform: scale(0.97);
+}
+
+button:focus-visible {
+    outline: 2px solid #6366f1;
+    outline-offset: 2px;
+}
+
+/* ==================== حقول الإدخال ==================== */
+
+input,
+select,
+textarea {
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+/* ==================== النوافذ المنبثقة (Modals) ==================== */
+
+.modal-backdrop {
+    animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+    animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* ==================== التنبيهات (Toast) ==================== */
+
+#toast {
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+                opacity 0.35s ease;
+    pointer-events: none;
+}
+
+#toast:not(.translate-y-20) {
+    pointer-events: auto;
+}
+
+/* ==================== التبويبات ==================== */
+
+.tab-btn {
+    position: relative;
+    white-space: nowrap;
+}
+
+.tab-btn i {
+    transition: transform 0.2s ease;
+}
+
+.tab-btn:hover i {
+    transform: scale(1.1);
+}
+
+/* ==================== الرسوم المتحركة للبطاقات ==================== */
+
+.grid > div {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.grid > div:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+/* ==================== الأيقونات ==================== */
+
+.fa-solid,
+.fa-regular,
+.fa-brands {
+    line-height: 1;
+}
+
+/* ==================== الاستجابة للشاشات ==================== */
+
+@media (max-width: 768px) {
+    .tab-btn {
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .tab-btn i {
+        margin-left: 0.25rem;
+    }
+
+    h1 {
+        font-size: 1rem !important;
+    }
+
+    .max-w-7xl {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    table {
+        font-size: 0.75rem;
+    }
+
+    table th,
+    table td {
+        padding: 0.5rem !important;
+    }
+}
+
+@media (max-width: 480px) {
+    header .flex-wrap {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    header .flex-wrap > div:last-child {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* ==================== الطباعة ==================== */
+
+@media print {
+    header,
+    footer,
+    button,
+    #toast {
+        display: none !important;
+    }
+
+    body {
+        background: #ffffff;
+    }
+
+    .shadow-sm,
+    .shadow-md,
+    .shadow-lg {
+        box-shadow: none !important;
+    }
+}
+
+/* ==================== تحسينات إضافية ==================== */
+
+/* تحديد النص */
+::selection {
+    background-color: #6366f1;
+    color: #ffffff;
+}
+
+/* تحسين الأداء */
+.tab-content {
+    animation: fadeIn 0.25s ease-in;
+}
+
+/* الأزرار ذات الأيقونات فقط */
+button[title] {
+    position: relative;
+}
+
+button[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    right: 50%;
+    transform: translateX(50%);
+    background-color: #1e293b;
+    color: #ffffff;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    margin-bottom: 6px;
+    z-index: 100;
+    pointer-events: none;
+    opacity: 0;
+    animation: fadeIn 0.15s ease forwards;
+}
+
+/* شريط تمرير أرقى للجداول الطويلة */
+.max-h-48::-webkit-scrollbar,
+.max-h-40::-webkit-scrollbar {
+    width: 6px;
+}
+
+.max-h-48::-webkit-scrollbar-thumb,
+.max-h-40::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.max-h-48::-webkit-scrollbar-thumb:hover,
+.max-h-40::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==================== نهاية الملف ==================== */
