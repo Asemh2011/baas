@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام إدارة حركة الباصات المدرسية</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-        }
-    </style>
-</head>
+    <title>نظام إدارة حركة الباصات المدرسية - مدارس الأمل الحديثة</title>
 
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts (Cairo) -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+
+    <!-- ملف الـ CSS الخارجي -->
+    <link rel="stylesheet" href="style.css">
+</head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
+    <!-- ==================== الهيدر ==================== -->
     <header class="bg-indigo-900 text-white shadow-lg sticky top-0 z-40">
         <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
@@ -25,1283 +28,484 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-black tracking-wide">نظام إدارة حركة الباصات</h1>
-                    <p class="text-xs text-indigo-200">إدارة الباصات، الرواتب، السحبيات، الغياب، والشكاوى لكل باص
-                        بالريال اليمني</p>
+                    <p class="text-xs text-indigo-200">مدارس الأمل الحديثة - إدارة الباصات، الرواتب، السحبيات، الغياب، والشكاوى</p>
                 </div>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <button onclick="exportCurrentTabExcel()" class="bg-emerald-700 hover:bg-emerald-600 text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 border border-emerald-600 shadow-sm cursor-pointer">
-                    <i class="fa-solid fa-file-excel"></i> تصدير القائمة المفتوحة (Excel)
+            <div class="flex items-center gap-2">
+                <button onclick="exportCurrentTab()" class="bg-indigo-800 hover:bg-indigo-700 text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 border border-indigo-700">
+                    <i class="fa-solid fa-download"></i> تصدير القائمة المفتوحة
                 </button>
-
-                <label class="bg-indigo-800 hover:bg-indigo-700 text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 border border-indigo-700 cursor-pointer">
-                    <i class="fa-solid fa-file-arrow-up"></i> استيراد للقائمة المفتوحة (Excel)
-                    <input type="file" id="importFile" accept=".csv, .xlsx" onchange="importCurrentTabExcel(event)" class="hidden">
-                </label>
-                <button onclick="resetAllData()" class="bg-rose-900/60 hover:bg-rose-900 text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 border border-rose-800 cursor-pointer">
+                <button onclick="importCurrentTab()" class="bg-indigo-800 hover:bg-indigo-700 text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 border border-indigo-700">
+                    <i class="fa-solid fa-upload"></i> استيراد للقائمة المفتوحة
+                </button>
+                <button onclick="resetAllData()" class="bg-rose-900/60 hover:bg-rose-900 text-xs px-3 py-2 rounded-xl font-bold transition flex items-center gap-1.5 border border-rose-800">
                     <i class="fa-solid fa-rotate-left"></i> تصفير النظام
                 </button>
             </div>
         </div>
     </header>
 
+    <!-- ==================== المحتوى الرئيسي ==================== -->
     <main class="max-w-7xl mx-auto px-4 py-8 flex-grow w-full">
 
-        <!-- Stats Summary Cards -->
+        <!-- بطاقات الإحصائيات -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div class="bg-indigo-50 p-4 rounded-xl text-indigo-600"><i class="fa-solid fa-bus text-xl"></i></div>
+                <div class="bg-indigo-50 text-indigo-600 p-4 rounded-2xl text-xl"><i class="fa-solid fa-bus"></i></div>
                 <div>
-                    <p class="text-xs text-slate-500 font-semibold">إجمالي الباصات</p>
-                    <h3 id="statTotalBuses" class="text-2xl font-black text-indigo-900">0</h3>
+                    <p class="text-xs text-slate-400 font-bold">إجمالي الباصات</p>
+                    <h3 class="text-2xl font-black text-slate-800" id="statBuses">0</h3>
                 </div>
             </div>
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div class="bg-emerald-50 p-4 rounded-xl text-emerald-600">
-                    <i class="fa-solid fa-users-gear text-xl"></i></div>
+                <div class="bg-emerald-50 text-emerald-600 p-4 rounded-2xl text-xl"><i class="fa-solid fa-user-shield"></i></div>
                 <div>
-                    <p class="text-xs text-slate-500 font-semibold">إجمالي طاقم الإشراف</p>
-                    <h3 id="statTotalStaff" class="text-2xl font-black text-emerald-900">0</h3>
+                    <p class="text-xs text-slate-400 font-bold">المشرفين/المشرفات</p>
+                    <h3 class="text-2xl font-black text-slate-800" id="statSupervisors">0</h3>
                 </div>
             </div>
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div class="bg-amber-50 p-4 rounded-xl text-amber-600">
-                    <i class="fa-solid fa-graduation-cap text-xl"></i></div>
+                <div class="bg-amber-50 text-amber-600 p-4 rounded-2xl text-xl"><i class="fa-solid fa-graduation-cap"></i></div>
                 <div>
-                    <p class="text-xs text-slate-500 font-semibold">إجمالي الطلاب</p>
-                    <h3 id="statTotalStudents" class="text-2xl font-black text-amber-900">0</h3>
+                    <p class="text-xs text-slate-400 font-bold">إجمالي الطلاب</p>
+                    <h3 class="text-2xl font-black text-slate-800" id="statStudents">0</h3>
                 </div>
             </div>
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div class="bg-rose-50 p-4 rounded-xl text-rose-600"><i class="fa-solid fa-wallet text-xl"></i></div>
+                <div class="bg-rose-50 text-rose-600 p-4 rounded-2xl text-xl"><i class="fa-solid fa-hand-holding-dollar"></i></div>
                 <div>
-                    <p class="text-xs text-slate-500 font-semibold">إجمالي الرواتب (ر.ي)</p>
-                    <h3 id="statTotalSalaries" class="text-xl font-black text-rose-900">0</h3>
+                    <p class="text-xs text-slate-400 font-bold">إجمالي السحبيات والخصومات</p>
+                    <h3 class="text-xl font-black text-rose-600" id="statTotalAdvances">0 ر.ي</h3>
                 </div>
             </div>
             <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100 flex items-center gap-4">
-                <div class="bg-purple-50 p-4 rounded-xl text-purple-600">
-                    <i class="fa-solid fa-triangle-exclamation text-xl"></i></div>
+                <div class="bg-blue-50 text-blue-600 p-4 rounded-2xl text-xl"><i class="fa-solid fa-wallet"></i></div>
                 <div>
-                    <p class="text-xs text-slate-500 font-semibold">الشكاوى والغيابات</p>
-                    <h3 id="statTotalIssues" class="text-2xl font-black text-purple-900">0</h3>
+                    <p class="text-xs text-slate-400 font-bold">صافي رواتب الباصات</p>
+                    <h3 class="text-xl font-black text-indigo-900" id="statNetSalaries">0 ر.ي</h3>
                 </div>
             </div>
         </div>
 
-        <div class="flex overflow-x-auto gap-2 border-b border-slate-200 pb-3 mb-6 no-scrollbar">
-            <button onclick="switchTab('buses')" id="tab-buses" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition whitespace-nowrap bg-indigo-900 text-white shadow-md">
-                <i class="fa-solid fa-bus ml-2"></i> إدارة الباصات
-            </button>
-            <button onclick="switchTab('staff')" id="tab-staff" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition whitespace-nowrap bg-white text-slate-600 hover:bg-slate-200">
-                <i class="fa-solid fa-users-gear ml-2"></i> طاقم الباصات (مشرفين / مشرفات)
-            </button>
-            <button onclick="switchTab('students')" id="tab-students" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition whitespace-nowrap bg-white text-slate-600 hover:bg-slate-200">
-                <i class="fa-solid fa-graduation-cap ml-2"></i> إدارة الطلاب
-            </button>
-            <button onclick="switchTab('advances')" id="tab-advances" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition whitespace-nowrap bg-white text-slate-600 hover:bg-slate-200">
-                <i class="fa-solid fa-hand-holding-dollar ml-2"></i> السحبيات والسلف للباصات
-            </button>
-            <button onclick="switchTab('attendance')" id="tab-attendance" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition whitespace-nowrap bg-white text-slate-600 hover:bg-slate-200">
-                <i class="fa-solid fa-calendar-xmark ml-2"></i> الغياب والخصومات الإدارية
-            </button>
-            <button onclick="switchTab('complaints')" id="tab-complaints" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition whitespace-nowrap bg-white text-slate-600 hover:bg-slate-200">
-                <i class="fa-solid fa-clipboard-question ml-2"></i> الشكاوى والملاحظات
-            </button>
-            <button onclick="switchTab('reports')" id="tab-reports" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition whitespace-nowrap bg-white text-slate-600 hover:bg-slate-200">
-                <i class="fa-solid fa-file-invoice-dollar ml-2"></i> التقارير الشاملة
-            </button>
-        </div>
+        <!-- صندوق التبويبات -->
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden mb-6">
 
-
-        <!-- TAB 1: BUSES -->
-        <div id="content-buses" class="tab-content space-y-6">
-            <div
-                class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-wrap justify-between items-center gap-4">
-                <h3 class="text-lg font-black text-slate-800"><i class="fa-solid fa-bus text-indigo-600 ml-2"></i> قائمة
-                    الباصات وخطوط السير</h3>
-                <button onclick="openBusModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
-                    <i class="fa-solid fa-plus"></i> إضافة باص جديد
+            <!-- أزرار التبويبات -->
+            <div class="flex flex-wrap border-b border-slate-100 bg-slate-50/50 p-2 gap-2" id="mainTabs">
+                <button onclick="switchTab('buses')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition bg-indigo-900 text-white shadow" data-tab="buses">
+                    <i class="fa-solid fa-bus ml-1.5"></i> إدارة الباصات والرواتب
+                </button>
+                <button onclick="switchTab('supervisors')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-slate-200/60" data-tab="supervisors">
+                    <i class="fa-solid fa-user-shield ml-1.5"></i> سجل المشرفين والطاقم
+                </button>
+                <button onclick="switchTab('students')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-slate-200/60" data-tab="students">
+                    <i class="fa-solid fa-graduation-cap ml-1.5"></i> إدارة الطلاب وتوزيعهم
+                </button>
+                <button onclick="switchTab('absence')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-slate-200/60" data-tab="absence">
+                    <i class="fa-solid fa-user-clock ml-1.5"></i> الغياب والخصومات
+                </button>
+                <button onclick="switchTab('complaints')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-slate-200/60" data-tab="complaints">
+                    <i class="fa-solid fa-triangle-exclamation ml-1.5"></i> شكاوى وملاحظات الباصات
+                </button>
+                <button onclick="switchTab('reports')" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm transition text-slate-600 hover:bg-slate-200/60" data-tab="reports">
+                    <i class="fa-solid fa-chart-pie ml-1.5"></i> التقارير والحركة الشاملة
                 </button>
             </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
-                                <th class="p-4">اسم الباص</th>
-                                <th class="p-4">رقم اللوحة</th>
-                                <th class="p-4">اسم السائق</th>
-                                <th class="p-4">رقم الهاتف</th>
-                                <th class="p-4">الوجهة / خط السير</th>
-                                <th class="p-4">الراتب الأساسي (ر.ي)</th>
-                                <th class="p-4 text-center">الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="busesTableBody" class="divide-y divide-slate-100 text-sm">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
 
-        <!-- TAB 2: STAFF (مشرفين ومشرفات) -->
-        <div id="content-staff" class="tab-content space-y-6 hidden">
-            <div
-                class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-wrap justify-between items-center gap-4">
-                <h3 class="text-lg font-black text-slate-800">
-                    <i class="fa-solid fa-users-gear text-emerald-600 ml-2"></i> طاقم الباصات (المشرفين / المشرفات)</h3>
-                <button onclick="openStaffModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
-                    <i class="fa-solid fa-plus"></i> إضافة عضو طاقم جديد
-                </button>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
-                                <th class="p-4">اسم المشرف/ة</th>
-                                <th class="p-4">رقم الهاتف</th>
-                                <th class="p-4">الباص المرتبط</th>
-                                <th class="p-4">الصفة / المسمى</th>
-                                <th class="p-4 text-center">الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="staffTableBody" class="divide-y divide-slate-100 text-sm">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 3: STUDENTS -->
-        <div id="content-students" class="tab-content space-y-6 hidden">
-            <div
-                class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-wrap justify-between items-center gap-4">
-                <h3 class="text-lg font-black text-slate-800">
-                    <i class="fa-solid fa-graduation-cap text-amber-600 ml-2"></i> إدارة الطلاب وتوزيعهم على الباصات
-                </h3>
-                <div class="flex items-center gap-3">
-                    <select id="filterStudentBus" onchange="renderStudents()" class="bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold outline-none focus:border-indigo-600">
-                        <option value="">جميع الباصات</option>
-                    </select>
-                    <button onclick="openStudentModal()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
-                        <i class="fa-solid fa-plus"></i> تسشجيل طالب جديد
+            <!-- ==================== تبويب الباصات ==================== -->
+            <div id="tab-buses" class="tab-content p-6">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">قائمة الباصات، خطوط السير، والرواتب المخصصة</h2>
+                        <p class="text-sm text-slate-500">إدارة رواتب كل باص، السحبيات، والخصومات (بالريال اليمني).</p>
+                    </div>
+                    <button onclick="openBusModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> إضافة باص جديد
                     </button>
                 </div>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-sm">
                     <table class="w-full text-right border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
-                                <th class="p-4">اسم الطالب</th>
-                                <th class="p-4">الصف الدراسي</th>
-                                <th class="p-4">اسم ولي الأمر</th>
+                            <tr class="bg-slate-100 text-slate-700 text-sm font-bold">
+                                <th class="p-4">اسم الباص</th>
+                                <th class="p-4">السائق / اللوحة</th>
+                                <th class="p-4">الوجهة</th>
+                                <th class="p-4">الراتب الأساسي للباص (ر.ي)</th>
+                                <th class="p-4">السحبيات</th>
+                                <th class="p-4">خصومات الغياب</th>
+                                <th class="p-4">الصافي المستحق</th>
+                                <th class="p-4 text-center">الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="busesTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ==================== تبويب المشرفين ==================== -->
+            <div id="tab-supervisors" class="tab-content p-6 hidden">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">سجل المشرفين والطاقم وارتباطهم بالباصات</h2>
+                        <p class="text-sm text-slate-500">بيانات الاتصال ومتابعة المشرفين والمشرفات لكل باص.</p>
+                    </div>
+                    <button onclick="openSupervisorModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-user-plus"></i> إضافة مشرف/مشرفة جديد
+                    </button>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-sm">
+                    <table class="w-full text-right border-collapse">
+                        <thead>
+                            <tr class="bg-slate-100 text-slate-700 text-sm font-bold">
+                                <th class="p-4">اسم المشرف / المشرفة</th>
                                 <th class="p-4">رقم الهاتف</th>
                                 <th class="p-4">الباص المرتبط</th>
-                                <th class="p-4">العنوان التفصيلي</th>
                                 <th class="p-4 text-center">الإجراءات</th>
                             </tr>
                         </thead>
-                        <tbody id="studentsTableBody" class="divide-y divide-slate-100 text-sm">
-                            <!-- Populated dynamically -->
-                        </tbody>
+                        <tbody id="supervisorsTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
                     </table>
                 </div>
             </div>
-        </div>
 
-        <!-- TAB 4: ADVANCES -->
-        <div id="content-advances" class="tab-content space-y-6 hidden">
-            <div
-                class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-wrap justify-between items-center gap-4">
-                <h3 class="text-lg font-black text-slate-800">
-                    <i class="fa-solid fa-hand-holding-dollar text-rose-600 ml-2"></i> السحبيات والسلف النقدية للباصات
-                </h3>
-                <button onclick="openAdvanceModal()" class="bg-rose-600 hover:bg-rose-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
-                    <i class="fa-solid fa-plus"></i> تسجيل سحب نقدي جديد
-                </button>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="overflow-x-auto">
+            <!-- ==================== تبويب الطلاب ==================== -->
+            <div id="tab-students" class="tab-content p-6 hidden">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">قائمة الطلاب وتوزيعهم على الباصات</h2>
+                        <p class="text-sm text-slate-500">سجل الطلاب، الصف الدراسي، أولياء الأمور وتوزيعهم الدقيق.</p>
+                    </div>
+                    <div class="flex gap-2 flex-wrap">
+                        <select id="filterStudentBus" onchange="renderStudents()" class="bg-slate-50 border border-slate-300 rounded-xl px-3 py-2 text-sm focus:outline-none">
+                            <option value="">جميع الباصات</option>
+                        </select>
+                        <button onclick="openStudentModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition shadow-md flex items-center gap-2">
+                            <i class="fa-solid fa-user-plus"></i> إضافة طالب جديد
+                        </button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-sm">
                     <table class="w-full text-right border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
-                                <th class="p-4">اسم الباص (السائق)</th>
-                                <th class="p-4">المبلغ المسحوب (ر.ي)</th>
-                                <th class="p-4">تاريخ السحب</th>
-                                <th class="p-4">السبب / البيان</th>
+                            <tr class="bg-slate-100 text-slate-700 text-sm font-bold">
+                                <th class="p-4">اسم الطالب</th>
+                                <th class="p-4">الصف / المرحلة</th>
+                                <th class="p-4">الشعبة / الجنس</th>
+                                <th class="p-4">الباص المخصص</th>
+                                <th class="p-4">المشرف / السائق</th>
                                 <th class="p-4 text-center">الإجراءات</th>
                             </tr>
                         </thead>
-                        <tbody id="advancesTableBody" class="divide-y divide-slate-100 text-sm">
-                            <!-- Populated dynamically -->
-                        </tbody>
+                        <tbody id="studentsTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
                     </table>
                 </div>
             </div>
-        </div>
 
-        <!-- TAB 5: ATTENDANCE & DEDUCTIONS -->
-        <div id="content-attendance" class="tab-content space-y-6 hidden">
-            <div
-                class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-wrap justify-between items-center gap-4">
-                <h3 class="text-lg font-black text-slate-800">
-                    <i class="fa-solid fa-calendar-xmark text-indigo-600 ml-2"></i> سجل الغياب والخصومات الإدارية</h3>
-                <button onclick="openAttendanceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
-                    <i class="fa-solid fa-plus"></i> تسجيل غياب جديد
-                </button>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="overflow-x-auto">
+            <!-- ==================== تبويب الغياب ==================== -->
+            <div id="tab-absence" class="tab-content p-6 hidden">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">إدارة غياب أصحاب الباصات / الطاقم وخصومات عدم توفر البديل</h2>
+                        <p class="text-sm text-slate-500">تسجيل غياب السائق أو المشرف/المشرفة، وتحديد قيمة الخصم بالريال اليمني.</p>
+                    </div>
+                    <button onclick="openAbsenceModal()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-user-xmark"></i> تسجيل غياب جديد
+                    </button>
+                </div>
+                <div class="overflow-x-auto rounded-xl border border-slate-100 shadow-sm">
                     <table class="w-full text-right border-collapse">
                         <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
-                                <th class="p-4">الباص المرتبط</th>
+                            <tr class="bg-slate-100 text-slate-700 text-sm font-bold">
+                                <th class="p-4">التاريخ</th>
+                                <th class="p-4">الباص</th>
                                 <th class="p-4">الشخص الغائب</th>
-                                <th class="p-4">التاريخ</th>
-                                <th class="p-4">هل تم توفير بديل؟</th>
-                                <th class="p-4">مبلغ الخصم الإداري (ر.ي)</th>
+                                <th class="p-4">هل تم تأمين بديل؟</th>
+                                <th class="p-4">مبلغ الخصم (ر.ي)</th>
+                                <th class="p-4">السبب / ملاحظات</th>
                                 <th class="p-4 text-center">الإجراءات</th>
                             </tr>
                         </thead>
-                        <tbody id="attendanceTableBody" class="divide-y divide-slate-100 text-sm">
-                            <!-- Populated dynamically -->
-                        </tbody>
+                        <tbody id="absenceTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
                     </table>
                 </div>
             </div>
-        </div>
 
-        <!-- TAB 6: COMPLAINTS -->
-        <div id="content-complaints" class="tab-content space-y-6 hidden">
-            <div
-                class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-wrap justify-between items-center gap-4">
-                <h3 class="text-lg font-black text-slate-800">
-                    <i class="fa-solid fa-clipboard-question text-purple-600 ml-2"></i> شكاوى وملاحظات الباصات</h3>
-                <button onclick="openComplaintModal()" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
-                    <i class="fa-solid fa-plus"></i> إضافة شكوى أو ملاحظة
-                </button>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
-                                <th class="p-4">الباص المعني</th>
-                                <th class="p-4">نوع الملاحظة</th>
-                                <th class="p-4">تفاصيل الشكوى</th>
-                                <th class="p-4">التاريخ</th>
-                                <th class="p-4">الحالة</th>
-                                <th class="p-4 text-center">الإجراءات</th>
-                            </tr>
-                        </thead>
-                        <tbody id="complaintsTableBody" class="divide-y divide-slate-100 text-sm">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+            <!-- ==================== تبويب الشكاوى ==================== -->
+            <div id="tab-complaints" class="tab-content p-6 hidden">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-slate-800">شكاوى وملاحظات الباصات</h2>
+                        <p class="text-sm text-slate-500">تسجيل ومتابعة الشكاوى والملاحظات الميدانية الخاصة بكل باص.</p>
+                    </div>
+                    <button onclick="openComplaintModal()" class="bg-rose-600 hover:bg-rose-700 text-white px-4 py-2.5 rounded-xl font-bold text-sm transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-circle-exclamation"></i> إضافة شكوى/ملاحظة للباص
+                    </button>
                 </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="complaintsContainer"></div>
             </div>
-        </div>
 
-        <!-- TAB 7: REPORTS -->
-        <div id="content-reports" class="tab-content space-y-6 hidden">
-            <div
-                class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-wrap justify-between items-center gap-4">
-                <h3 class="text-lg font-black text-slate-800">
-                    <i class="fa-solid fa-file-invoice-dollar text-indigo-600 ml-2"></i> التقارير المالية وحسابات
-                    الاستحقاق للباصات</h3>
-                <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white text-xs px-4 py-2.5 rounded-xl font-bold transition flex items-center gap-2 cursor-pointer shadow-sm">
-                    <i class="fa-solid fa-print"></i> طباعة التقرير الشامل
-                </button>
-            </div>
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right border-collapse">
-                        <thead>
-                            <tr class="bg-slate-50 text-slate-500 text-xs font-bold border-b border-slate-200">
-                                <th class="p-4">اسم الباص</th>
-                                <th class="p-4">السائق</th>
-                                <th class="p-4">عدد الطلاب</th>
-                                <th class="p-4">الراتب الأساسي</th>
-                                <th class="p-4">إجمالي السحبيات</th>
-                                <th class="p-4">إجمالي الخصومات</th>
-                                <th class="p-4 text-emerald-700 font-black">الصافي المستحق (ر.ي)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="reportsTableBody" class="divide-y divide-slate-100 text-sm">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+            <!-- ==================== تبويب التقارير ==================== -->
+            <div id="tab-reports" class="tab-content p-6 hidden">
+                <div class="mb-6">
+                    <h2 class="text-xl font-bold text-slate-800">تقرير حركة الباصات الشامل والرواتب والطلاب</h2>
+                    <p class="text-sm text-slate-500">تقرير مفصل لكل باص يوضح الرواتب، السحبيات، الخصومات، والطلاب.</p>
                 </div>
+                <div class="space-y-6" id="reportsContainer"></div>
             </div>
         </div>
-
     </main>
 
+    <!-- ==================== الفوتر ==================== -->
+    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+        جميع الحقوق محفوظة © نظام إدارة حركة الباصات المدرسية 2026 - مدارس الأمل الحديثة
+    </footer>
 
-    <!-- BUS MODAL -->
-    <div id="busModal"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div
-            class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in duration-200">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-                <h3 id="busModalTitle" class="text-lg font-black text-indigo-900">إضافة باص جديد</h3>
-                <button onclick="closeBusModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+    <!-- ==================== نافذة الباص ==================== -->
+    <div id="busModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="bg-indigo-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="busModalTitle">إضافة باص جديد</h3>
+                <button onclick="closeBusModal()" class="text-indigo-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form id="busForm" onsubmit="saveBus(event)" class="space-y-4">
+            <form id="busForm" onsubmit="saveBus(event)" class="p-6 space-y-4">
                 <input type="hidden" id="busId">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">اسم الباص (مثال: رقم 1)</label>
-                    <input type="text" id="busName" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">رقم اللوحة</label>
-                        <input type="text" id="busPlate" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">الراتب الأساسي (ر.ي)</label>
-                        <input type="number" id="busSalary" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">اسم السائق</label>
-                        <input type="text" id="busDriver" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">رقم هاتف السائق</label>
-                        <input type="text" id="busDriverPhone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                    </div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">اسم الباص (أو رقمه)</label>
+                    <input type="text" id="busName" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">الوجهة / خط السير</label>
-                    <input type="text" id="busRoute" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">رقم اللوحة</label>
+                    <input type="text" id="busPlate" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
-                <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeBusModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs px-4 py-2.5 rounded-xl font-bold transition">إلغاء</button>
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-5 py-2.5 rounded-xl font-bold transition">حفظ الباص</button>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">اسم صاحب الباص / السائق</label>
+                    <input type="text" id="busDriver" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">رقم هاتف السائق</label>
+                    <input type="text" id="busDriverPhone" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الوجهة أو خط السير (المنطقة)</label>
+                    <input type="text" id="busRoute" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الراتب الأساسي للباص (ر.ي)</label>
+                    <input type="number" id="busSalary" required min="0" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" onclick="closeBusModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold text-sm">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow">حفظ البيانات</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- STAFF MODAL -->
-    <div id="staffModal"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div
-            class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in duration-200">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-                <h3 id="staffModalTitle" class="text-lg font-black text-emerald-900">إضافة عضو طاقم جديد</h3>
-                <button onclick="closeStaffModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+    <!-- ==================== نافذة المشرف ==================== -->
+    <div id="supervisorModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="bg-emerald-800 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="supModalTitle">إضافة مشرف/مشرفة جديد</h3>
+                <button onclick="closeSupervisorModal()" class="text-emerald-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form id="staffForm" onsubmit="saveStaff(event)" class="space-y-4">
-                <input type="hidden" id="staffId">
+            <form id="supervisorForm" onsubmit="saveSupervisor(event)" class="p-6 space-y-4">
+                <input type="hidden" id="supId">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">اسم المشرف / المشرفة</label>
-                    <input type="text" id="staffName" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-emerald-600">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">رقم الهاتف</label>
-                        <input type="text" id="staffPhone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-emerald-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">المسمى (مشرف / مشرفة)</label>
-                        <input type="text" id="staffRole" value="مشرفة باص" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-emerald-600">
-                    </div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">اسم المشرف / المشرفة</label>
+                    <input type="text" id="supName" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">الباص المرتبط</label>
-                    <select id="staffBusId" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-emerald-600">
-                        <!-- Populated dynamically -->
-                    </select>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">رقم الهاتف</label>
+                    <input type="text" id="supPhone" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none">
                 </div>
-                <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeStaffModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs px-4 py-2.5 rounded-xl font-bold transition">إلغاء</button>
-                    <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-5 py-2.5 rounded-xl font-bold transition">حفظ البيانات</button>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الباص المرتبط</label>
+                    <select id="supBusId" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:outline-none"></select>
+                </div>
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" onclick="closeSupervisorModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold text-sm">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow">حفظ السجل</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- STUDENT MODAL -->
-    <div id="studentModal"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div
-            class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in duration-200">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-                <h3 id="studentModalTitle" class="text-lg font-black text-amber-900">تسجيل طالب جديد</h3>
-                <button onclick="closeStudentModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+    <!-- ==================== نافذة السحبيات ==================== -->
+    <div id="advanceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden">
+            <div class="bg-rose-800 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg">إدارة السحبيات والسلف للباص</h3>
+                <button onclick="closeAdvanceModal()" class="text-rose-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form id="studentForm" onsubmit="saveStudent(event)" class="space-y-4">
+            <div class="p-6 space-y-4">
+                <input type="hidden" id="advBusId">
+                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <h4 class="font-bold text-slate-800 text-sm mb-2">إضافة سحبة / سلفة نقدية جديدة</h4>
+                    <form onsubmit="addAdvance(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <input type="number" id="advAmount" placeholder="المبلغ (ر.ي)" required min="1" class="bg-white border border-slate-300 rounded-xl p-2.5 text-sm">
+                        <input type="text" id="advNote" placeholder="السبب (سلفة، طوارئ...)" required class="bg-white border border-slate-300 rounded-xl p-2.5 text-sm">
+                        <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl p-2.5 text-sm shadow">إضافة السحبة</button>
+                    </form>
+                </div>
+                <div>
+                    <h4 class="font-bold text-slate-800 text-sm mb-2">سجل السحبيات السابقة</h4>
+                    <div class="max-h-48 overflow-y-auto border border-slate-200 rounded-xl">
+                        <table class="w-full text-right text-xs">
+                            <thead class="bg-slate-100 text-slate-700">
+                                <tr>
+                                    <th class="p-3">التاريخ</th>
+                                    <th class="p-3">المبلغ</th>
+                                    <th class="p-3">السبب</th>
+                                    <th class="p-3 text-center">حذف</th>
+                                </tr>
+                            </thead>
+                            <tbody id="advancesTableBody" class="divide-y divide-slate-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== نافذة الطالب ==================== -->
+    <div id="studentModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="bg-amber-800 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg" id="studentModalTitle">إضافة طالب جديد</h3>
+                <button onclick="closeStudentModal()" class="text-amber-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form id="studentForm" onsubmit="saveStudent(event)" class="p-6 space-y-4">
                 <input type="hidden" id="studentId">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">اسم الطالب الكامل</label>
-                    <input type="text" id="studentName" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-amber-600">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">الصف الدراسي</label>
-                        <input type="text" id="studentGrade" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-amber-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">الباص المرتبط</label>
-                        <select id="studentBusId" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-amber-600">
-                            <!-- Populated dynamically -->
-                        </select>
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">اسم ولي الأمر</label>
-                        <input type="text" id="studentParent" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-amber-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">رقم هاتف ولي الأمر</label>
-                        <input type="text" id="studentPhone" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-amber-600">
-                    </div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">اسم الطالب الكامل</label>
+                    <input type="text" id="stdName" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">العنوان التفصيلي (المنطقة / الشارع)</label>
-                    <input type="text" id="studentAddress" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-amber-600">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الصف الدراسي</label>
+                    <input type="text" id="stdGrade" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
                 </div>
-                <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeStudentModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs px-4 py-2.5 rounded-xl font-bold transition">إلغاء</button>
-                    <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white text-xs px-5 py-2.5 rounded-xl font-bold transition">حفظ الطالب</button>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">اسم ولي الأمر</label>
+                    <input type="text" id="stdParent" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">هاتف ولي الأمر</label>
+                    <input type="text" id="stdPhone" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الباص المخصص</label>
+                    <select id="stdBusId" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">العنوان / ملاحظات الموقع</label>
+                    <input type="text" id="stdAddress" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-amber-500 focus:outline-none">
+                </div>
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" onclick="closeStudentModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold text-sm">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold text-sm shadow">حفظ الطالب</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- ADVANCE MODAL -->
-    <div id="advanceModal"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div
-            class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in duration-200">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-                <h3 class="text-lg font-black text-rose-900">تسجيل سحب نقدي / سلفة للباص</h3>
-                <button onclick="closeAdvanceModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+    <!-- ==================== نافذة الغياب ==================== -->
+    <div id="absenceModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="bg-indigo-900 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg">تسجيل غياب طاقم الباص وخصم إداري</h3>
+                <button onclick="closeAbsenceModal()" class="text-indigo-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form id="advanceForm" onsubmit="saveAdvance(event)" class="space-y-4">
+            <form id="absenceForm" onsubmit="saveAbsence(event)" class="p-6 space-y-4">
+                <input type="hidden" id="absenceId">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">اختر الباص (السائق)</label>
-                    <select id="advanceBusId" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-rose-600">
-                        <!-- Populated dynamically -->
+                    <label class="block text-xs font-bold text-slate-700 mb-1">التاريخ</label>
+                    <input type="date" id="absDate" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">اختر الباص</label>
+                    <select id="absBusId" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">الشخص الغائب</label>
+                    <select id="absStaffType" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="driver">صاحب الباص / السائق الأساسي</option>
+                        <option value="supervisor">المشرف أو المشرفة المرتبطة</option>
                     </select>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">المبلغ المسحوب (ر.ي)</label>
-                        <input type="number" id="advanceAmount" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-rose-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">التاريخ</label>
-                        <input type="date" id="advanceDate" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-rose-600">
-                    </div>
-                </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">السبب / البيان</label>
-                    <input type="text" id="advanceReason" placeholder="مثال: سلفة طارئة لصيانة الباص" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-rose-600">
-                </div>
-                <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeAdvanceModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs px-4 py-2.5 rounded-xl font-bold transition">إلغاء</button>
-                    <button type="submit" class="bg-rose-600 hover:bg-rose-700 text-white text-xs px-5 py-2.5 rounded-xl font-bold transition">حفظ السحب</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ATTENDANCE MODAL -->
-    <div id="attendanceModal"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div
-            class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in duration-200">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-                <h3 class="text-lg font-black text-indigo-900">تسجيل غياب وخصم إداري</h3>
-                <button onclick="closeAttendanceModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <form id="attendanceForm" onsubmit="saveAttendance(event)" class="space-y-4">
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">الباص المرتبط</label>
-                    <select id="attendanceBusId" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                        <!-- Populated dynamically -->
+                    <label class="block text-xs font-bold text-slate-700 mb-1">هل تم تأمين بديل مناسب؟</label>
+                    <select id="absHasSubstitute" onchange="toggleSubstituteAmount()" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                        <option value="yes">نعم (تم توفير بديل - لا يوجد خصم)</option>
+                        <option value="no">لا (لم يتم توفير بديل - يطبق خصم إداري)</option>
                     </select>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">الشخص الغائب (سائق أو مشرف/ة)</label>
-                        <input type="text" id="attendancePerson" placeholder="اسم السائق أو المشرف/ة" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">التاريخ</label>
-                        <input type="date" id="attendanceDate" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                    </div>
+                <div id="absenceAmountWrapper" class="hidden">
+                    <label class="block text-xs font-bold text-slate-700 mb-1">مبلغ الخصم (ر.ي)</label>
+                    <input type="number" id="absDeductionAmount" min="0" value="10000" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">هل تم توفير بديل؟</label>
-                        <select id="attendanceHasReplacement" onchange="toggleReplacementDeduction()" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                            <option value="yes">نعم (تم توفير بديل)</option>
-                            <option value="no">لا (لم يتم توفير بديل)</option>
-                        </select>
-                    </div>
-                    <div id="deductionAmountContainer" class="hidden">
-                        <label class="block text-xs font-bold text-slate-600 mb-1">مبلغ الخصم الإداري (ر.ي)</label>
-                        <input type="number" id="attendanceDeduction" value="0" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-indigo-600">
-                    </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">سبب الغياب / ملاحظات</label>
+                    <input type="text" id="absReason" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:outline-none">
                 </div>
-                <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeAttendanceModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs px-4 py-2.5 rounded-xl font-bold transition">إلغاء</button>
-                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-5 py-2.5 rounded-xl font-bold transition">حفظ الغياب</button>
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" onclick="closeAbsenceModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold text-sm">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-sm shadow">حفظ السجل</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- COMPLAINT MODAL -->
-    <div id="complaintModal"
-        class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div
-            class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 space-y-5 animate-in fade-in zoom-in duration-200">
-            <div class="flex justify-between items-center border-b border-slate-100 pb-4">
-                <h3 class="text-lg font-black text-purple-900">إضافة شكوى أو ملاحظة جديدة</h3>
-                <button onclick="closeComplaintModal()" class="text-slate-400 hover:text-slate-600 text-lg"><i class="fa-solid fa-xmark"></i></button>
+    <!-- ==================== نافذة الشكاوى ==================== -->
+    <div id="complaintModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+            <div class="bg-rose-800 text-white px-6 py-4 flex justify-between items-center">
+                <h3 class="font-bold text-lg">إضافة شكوى أو ملاحظة للباص</h3>
+                <button onclick="closeComplaintModal()" class="text-rose-200 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form id="complaintForm" onsubmit="saveComplaint(event)" class="space-y-4">
+            <form id="complaintForm" onsubmit="saveComplaint(event)" class="p-6 space-y-4">
+                <input type="hidden" id="complaintId">
                 <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">الباص المعني</label>
-                    <select id="complaintBusId" required class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-purple-600">
-                        <!-- Populated dynamically -->
+                    <label class="block text-xs font-bold text-slate-700 mb-1">اختر الباص المعني</label>
+                    <select id="compBusId" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none"></select>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">عنوان الشكوى أو الملاحظة</label>
+                    <input type="text" id="compTitle" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">مقدم الشكوى / الملاحظة</label>
+                    <input type="text" id="compReporter" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">تفاصيل الشكوى أو الملاحظة</label>
+                    <textarea id="compDetails" rows="3" required class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none"></textarea>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 mb-1">حالة المعالجة</label>
+                    <select id="compStatus" class="w-full bg-slate-50 border border-slate-300 rounded-xl p-3 text-sm focus:ring-2 focus:ring-rose-500 focus:outline-none">
+                        <option value="جديدة قيد المتابعة">جديدة قيد المتابعة</option>
+                        <option value="تم الحل والتحقيق">تم الحل والتحقيق</option>
+                        <option value="مؤجلة / تحت المراقبة">مؤجلة / تحت المراقبة</option>
                     </select>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">نوع الملاحظة</label>
-                        <select id="complaintType" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-purple-600">
-                            <option value="شكوى ولي أمر">شكوى ولي أمر</option>
-                            <option value="تأخير عن الموعد">تأخير عن الموعد</option>
-                            <option value="سلوك طالب">سلوك طالب</option>
-                            <option value="أخرى">أخرى</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1">حالة الملاحظة</label>
-                        <select id="complaintStatus" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-purple-600">
-                            <option value="جديدة قيد المتابعة">جديدة قيد المتابعة</option>
-                            <option value="تم الحل والتحقيق">تم الحل والتحقيق</option>
-                            <option value="مؤجلة / تحت المراقبة">مؤجلة / تحت المراقبة</option>
-                        </select>
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-600 mb-1">تفاصيل الشكوى أو الملاحظة</label>
-                    <textarea id="complaintText" rows="3" required placeholder="اكتب تفاصيل الشكوى أو الملاحظة هنا..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 text-sm font-semibold outline-none focus:border-purple-600"></textarea>
-                </div>
-                <div class="flex justify-end gap-3 pt-2">
-                    <button type="button" onclick="closeComplaintModal()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs px-4 py-2.5 rounded-xl font-bold transition">إلغاء</button>
-                    <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white text-xs px-5 py-2.5 rounded-xl font-bold transition">حفظ الملاحظة</button>
+                <div class="flex justify-end gap-2 pt-4">
+                    <button type="button" onclick="closeComplaintModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded-xl font-bold text-sm">إلغاء</button>
+                    <button type="submit" class="px-5 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold text-sm shadow">حفظ الشكوى</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <script>
-        // Data Store
-        let state = {
-            currentTab: 'buses',
-            buses: [
-                { id: 'b_1', name: 'رقم 1', plate: '4274', driver: 'مجاهد السعدي', driverPhone: '730853439', route: 'مجمع الخير', salary: 130000 },
-                { id: 'b_2', name: 'رقم 2', plate: '5637', driver: 'عبدالمومن محمد عبده', driverPhone: '711481856', route: 'مجمع الخير', salary: 130000 },
-                { id: 'b_3', name: 'رقم 3', plate: 'لايوجد', driver: 'حمود نعمان مرشد الخطيب', driverPhone: '772019194', route: 'الكهرباء سوق الغنم', salary: 130000 },
-                { id: 'b_4', name: 'رقم 4', plate: '16/2508', driver: 'محمد عبدالكريم عبدالله صالح', driverPhone: '718787755', route: 'الشركه', salary: 140000 },
-                { id: 'b_5', name: 'رقم 5', plate: 'لايوجد', driver: 'محمد عبدالرحمن محمد العزي', driverPhone: '711384578', route: 'مجمع الخير الصيانة', salary: 130000 },
-                { id: 'b_6', name: 'رقم 6', plate: '1560', driver: 'صالح احمد حسن الحمادي', driverPhone: '718690989', route: 'الهئيه سكن الجرحى', salary: 140000 },
-                { id: 'b_7', name: 'رقم 7', plate: '6495', driver: 'جمال عبدالسلام', driverPhone: '7721288830', route: 'الروضه', salary: 150000 },
-                { id: 'b_8', name: 'رقم 8', plate: 'لايوجد', driver: 'معاذ مهيوب علي', driverPhone: '774367756', route: 'الصحن والبقايل', salary: 150000 },
-                { id: 'b_9', name: 'رقم 9', plate: '6682', driver: 'حمدي محمد العماري', driverPhone: '774912997', route: 'مجمع الخير', salary: 130000 },
-                { id: 'b_10', name: 'رقم 10', plate: '10522', driver: 'نبيل محمد علي مشرع', driverPhone: '770862776', route: 'مجمع الخير', salary: 130000 },
-                { id: 'b_11', name: 'رقم 11', plate: '8514', driver: 'محمد ربيع ابراهيم', driverPhone: 'لايوجد', route: 'جو النسيم', salary: 160000 },
-                { id: 'b_12', name: 'رقم 12', plate: '0586', driver: 'هشام محمد القدسي', driverPhone: '715385982', route: 'بن عبود', salary: 130000 }
-            ],
-            staff: [
-                { id: 's_1', name: 'أمل أحمد', phone: '771234567', role: 'مشرفة باص', busId: 'b_1' },
-                { id: 's_2', name: 'فاطمة محمد', phone: '733221144', role: 'مشرفة باص', busId: 'b_2' }
-            ],
-            students: [
-                { id: 'st_1', name: 'عمر مجاهد السعدي', grade: 'السادس الابتدائي', parent: 'مجاهد السعدي', phone: '730853439', busId: 'b_1', address: 'مجمع الخير' },
-                { id: 'st_2', name: 'سارة عبدالمؤمن', grade: 'الثاني الإعدادي', parent: 'عبدالمؤمن محمد', phone: '711481856', busId: 'b_2', address: 'مجمع الخير' }
-            ],
-            advances: [],
-            attendance: [],
-            complaints: []
-        };
+    <!-- ==================== الإشعار (Toast) ==================== -->
+    <div id="toast" class="fixed bottom-5 left-5 bg-slate-900 text-white px-5 py-3 rounded-xl shadow-2xl z-50 transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3">
+        <i id="toastIcon" class="fa-solid fa-check-circle text-emerald-400 text-lg"></i>
+        <div>
+            <h5 id="toastTitle" class="font-bold text-sm">تم بنجاح</h5>
+            <p id="toastMsg" class="text-xs text-slate-300">تم تنفيذ العملية بنجاح</p>
+        </div>
+    </div>
 
-        // Load saved state from localStorage if exists
-        function loadData() {
-            const saved = localStorage.getItem('school_bus_manager_data_v3');
-            if (saved) {
-                try {
-                    state = JSON.parse(saved);
-                } catch (e) {
-                    console.error('Error loading data', e);
-                }
-            }
-        }
-
-        function saveData() {
-            localStorage.setItem('school_bus_manager_data_v3', JSON.stringify(state));
-            renderAll();
-        }
-
-        function resetAllData() {
-            if (confirm('هل أنت متأكد من تصفير وإعادة تعيين كافة بيانات النظام؟')) {
-                localStorage.removeItem('school_bus_manager_data_v3');
-                location.reload();
-            }
-        }
-
-        // Navigation
-        function switchTab(tabId) {
-            state.currentTab = tabId;
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.querySelectorAll('.tab-btn').forEach(el => {
-                el.classList.remove('bg-indigo-900', 'text-white', 'shadow-md');
-                el.classList.add('bg-white', 'text-slate-600', 'hover:bg-slate-200');
-            });
-            
-            document.getElementById(`content-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-${tabId}`);
-            activeBtn.classList.remove('bg-white', 'text-slate-600', 'hover:bg-slate-200');
-            activeBtn.classList.add('bg-indigo-900', 'text-white', 'shadow-md');
-        }
-
-        // Render Functions
-        function renderAll() {
-            renderStats();
-            renderBuses();
-            renderStaff();
-            renderStudents();
-            renderAdvances();
-            renderAttendance();
-            renderComplaints();
-            renderReports();
-            populateBusDropdowns();
-        }
-
-        function renderStats() {
-            document.getElementById('statTotalBuses').innerText = state.buses.length;
-            document.getElementById('statTotalStaff').innerText = state.staff.length;
-            document.getElementById('statTotalStudents').innerText = state.students.length;
-            
-            const totalSalaries = state.buses.reduce((sum, b) => sum + Number(b.salary || 0), 0);
-            document.getElementById('statTotalSalaries').innerText = totalSalaries.toLocaleString() + ' ر.ي';
-            document.getElementById('statTotalIssues').innerText = (state.attendance.length + state.complaints.length);
-        }
-
-        function populateBusDropdowns() {
-            const dropdowns = ['staffBusId', 'studentBusId', 'advanceBusId', 'attendanceBusId', 'complaintBusId', 'filterStudentBus'];
-            dropdowns.forEach(id => {
-                const el = document.getElementById(id);
-                if (!el) return;
-                const currentVal = el.value;
-                let html = id === 'filterStudentBus' ? '<option value="">جميع الباصات</option>' : '<option value="">اختر الباص...</option>';
-                state.buses.forEach(b => {
-                    html += `<option value="${b.id}">${b.name} (${b.driver} - ${b.route})</option>`;
-                });
-                el.innerHTML = html;
-                el.value = currentVal;
-            });
-        }
-
-        // BUSES LOGIC
-        function renderBuses() {
-            const tbody = document.getElementById('busesTableBody');
-            if (state.buses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">لا توجد باصات مسجلة حالياً</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.buses.map(b => `
-                <tr class="hover:bg-slate-50/80 transition">
-                    <td class="p-4 font-bold text-indigo-900">${b.name}</td>
-                    <td class="p-4">${b.plate}</td>
-                    <td class="p-4 font-semibold">${b.driver}</td>
-                    <td class="p-4">${b.driverPhone}</td>
-                    <td class="p-4"><span class="bg-indigo-50 text-indigo-700 px-3 py-1 rounded-lg text-xs font-bold">${b.route}</span></td>
-                    <td class="p-4 font-bold text-rose-800">${Number(b.salary).toLocaleString()} ر.ي</td>
-                    <td class="p-4 text-center space-x-2 space-x-reverse">
-                        <button onclick="editBus('${b.id}')" class="bg-indigo-50 hover:bg-indigo-100 text-indigo-600 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteBus('${b.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function openBusModal(id = null) {
-            document.getElementById('busModal').classList.remove('hidden');
-            if (id) {
-                document.getElementById('busModalTitle').innerText = 'تعديل بيانات الباص';
-                const b = state.buses.find(x => x.id === id);
-                document.getElementById('busId').value = b.id;
-                document.getElementById('busName').value = b.name;
-                document.getElementById('busPlate').value = b.plate;
-                document.getElementById('busDriver').value = b.driver;
-                document.getElementById('busDriverPhone').value = b.driverPhone;
-                document.getElementById('busRoute').value = b.route;
-                document.getElementById('busSalary').value = b.salary;
-            } else {
-                document.getElementById('busModalTitle').innerText = 'إضافة باص جديد';
-                document.getElementById('busForm').reset();
-                document.getElementById('busId').value = '';
-            }
-        }
-
-        function closeBusModal() {
-            document.getElementById('busModal').classList.add('hidden');
-        }
-
-        function saveBus(e) {
-            e.preventDefault();
-            const id = document.getElementById('busId').value;
-            const busData = {
-                id: id ? id : 'b_' + Date.now(),
-                name: document.getElementById('busName').value,
-                plate: document.getElementById('busPlate').value,
-                driver: document.getElementById('busDriver').value,
-                driverPhone: document.getElementById('busDriverPhone').value,
-                route: document.getElementById('busRoute').value,
-                salary: Number(document.getElementById('busSalary').value)
-            };
-            if (id) {
-                const idx = state.buses.findIndex(x => x.id === id);
-                state.buses[idx] = busData;
-            } else {
-                state.buses.push(busData);
-            }
-            closeBusModal();
-            saveData();
-        }
-
-        function editBus(id) { openBusModal(id); }
-        function deleteBus(id) {
-            if (confirm('هل أنت متأكد من حذف هذا الباص؟')) {
-                state.buses = state.buses.filter(x => x.id !== id);
-                saveData();
-            }
-        }
-
-        // STAFF LOGIC
-        function renderStaff() {
-            const tbody = document.getElementById('staffTableBody');
-            if (state.staff.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">لا يوجد طاقم إشراف مسجل حالياً</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.staff.map(s => {
-                const bus = state.buses.find(b => b.id === s.busId);
-                return `
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="p-4 font-bold text-emerald-900">${s.name}</td>
-                        <td class="p-4">${s.phone}</td>
-                        <td class="p-4 font-semibold">${bus ? bus.name + ' (' + bus.driver + ')' : 'غير محدد'}</td>
-                        <td class="p-4"><span class="bg-emerald-50 text-emerald-700 px-3 py-1 rounded-lg text-xs font-bold">${s.role}</span></td>
-                        <td class="p-4 text-center space-x-2 space-x-reverse">
-                            <button onclick="editStaff('${s.id}')" class="bg-emerald-50 hover:bg-emerald-100 text-emerald-600 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteStaff('${s.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function openStaffModal(id = null) {
-            populateBusDropdowns();
-            document.getElementById('staffModal').classList.remove('hidden');
-            if (id) {
-                document.getElementById('staffModalTitle').innerText = 'تعديل بيانات الطاقم';
-                const s = state.staff.find(x => x.id === id);
-                document.getElementById('staffId').value = s.id;
-                document.getElementById('staffName').value = s.name;
-                document.getElementById('staffPhone').value = s.phone;
-                document.getElementById('staffRole').value = s.role;
-                document.getElementById('staffBusId').value = s.busId;
-            } else {
-                document.getElementById('staffModalTitle').innerText = 'إضافة عضو طاقم جديد';
-                document.getElementById('staffForm').reset();
-                document.getElementById('staffId').value = '';
-            }
-        }
-
-        function closeStaffModal() {
-            document.getElementById('staffModal').classList.add('hidden');
-        }
-
-        function saveStaff(e) {
-            e.preventDefault();
-            const id = document.getElementById('staffId').value;
-            const staffData = {
-                id: id ? id : 's_' + Date.now(),
-                name: document.getElementById('staffName').value,
-                phone: document.getElementById('staffPhone').value,
-                role: document.getElementById('staffRole').value,
-                busId: document.getElementById('staffBusId').value
-            };
-            if (id) {
-                const idx = state.staff.findIndex(x => x.id === id);
-                state.staff[idx] = staffData;
-            } else {
-                state.staff.push(staffData);
-            }
-            closeStaffModal();
-            saveData();
-        }
-
-        function editStaff(id) { openStaffModal(id); }
-        function deleteStaff(id) {
-            if (confirm('هل أنت متأكد من حذف هذا العضو؟')) {
-                state.staff = state.staff.filter(x => x.id !== id);
-                saveData();
-            }
-        }
-
-        // STUDENTS LOGIC
-        function renderStudents() {
-            const filterBusId = document.getElementById('filterStudentBus').value;
-            const tbody = document.getElementById('studentsTableBody');
-            let filtered = state.students;
-            if (filterBusId) {
-                filtered = filtered.filter(s => s.busId === filterBusId);
-            }
-            if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">لا يوجد طلاب مسجلون حالياً</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = filtered.map(st => {
-                const bus = state.buses.find(b => b.id === st.busId);
-                return `
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="p-4 font-bold text-amber-900">${st.name}</td>
-                        <td class="p-4">${st.grade}</td>
-                        <td class="p-4 font-semibold">${st.parent}</td>
-                        <td class="p-4">${st.phone}</td>
-                        <td class="p-4"><span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-lg text-xs font-bold">${bus ? bus.name : 'غير محدد'}</span></td>
-                        <td class="p-4 text-xs text-slate-600">${st.address}</td>
-                        <td class="p-4 text-center space-x-2 space-x-reverse">
-                            <button onclick="editStudent('${st.id}')" class="bg-amber-50 hover:bg-amber-100 text-amber-600 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-pen"></i></button>
-                            <button onclick="deleteStudent('${st.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function openStudentModal(id = null) {
-            populateBusDropdowns();
-            document.getElementById('studentModal').classList.remove('hidden');
-            if (id) {
-                document.getElementById('studentModalTitle').innerText = 'تعديل بيانات الطالب';
-                const st = state.students.find(x => x.id === id);
-                document.getElementById('studentId').value = st.id;
-                document.getElementById('studentName').value = st.name;
-                document.getElementById('studentGrade').value = st.grade;
-                document.getElementById('studentParent').value = st.parent;
-                document.getElementById('studentPhone').value = st.phone;
-                document.getElementById('studentBusId').value = st.busId;
-                document.getElementById('studentAddress').value = st.address;
-            } else {
-                document.getElementById('studentModalTitle').innerText = 'تسجيل طالب جديد';
-                document.getElementById('studentForm').reset();
-                document.getElementById('studentId').value = '';
-            }
-        }
-
-        function closeStudentModal() {
-            document.getElementById('studentModal').classList.add('hidden');
-        }
-
-        function saveStudent(e) {
-            e.preventDefault();
-            const id = document.getElementById('studentId').value;
-            const studentData = {
-                id: id ? id : 'st_' + Date.now(),
-                name: document.getElementById('studentName').value,
-                grade: document.getElementById('studentGrade').value,
-                parent: document.getElementById('studentParent').value,
-                phone: document.getElementById('studentPhone').value,
-                busId: document.getElementById('studentBusId').value,
-                address: document.getElementById('studentAddress').value
-            };
-            if (id) {
-                const idx = state.students.findIndex(x => x.id === id);
-                state.students[idx] = studentData;
-            } else {
-                state.students.push(studentData);
-            }
-            closeStudentModal();
-            saveData();
-        }
-
-        function editStudent(id) { openStudentModal(id); }
-        function deleteStudent(id) {
-            if (confirm('هل أنت متأكد من حذف هذا الطالب؟')) {
-                state.students = state.students.filter(x => x.id !== id);
-                saveData();
-            }
-        }
-
-        // ADVANCES LOGIC
-        function renderAdvances() {
-            const tbody = document.getElementById('advancesTableBody');
-            if (state.advances.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-400">لا توجد سحبيات أو سلف مسجلة حالياً</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.advances.map(a => {
-                const bus = state.buses.find(b => b.id === a.busId);
-                return `
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="p-4 font-bold text-rose-900">${bus ? bus.name + ' (' + bus.driver + ')' : 'غير محدد'}</td>
-                        <td class="p-4 font-black text-rose-700">${Number(a.amount).toLocaleString()} ر.ي</td>
-                        <td class="p-4 text-xs">${a.date}</td>
-                        <td class="p-4 text-xs">${a.reason}</td>
-                        <td class="p-4 text-center">
-                            <button onclick="deleteAdvance('${a.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function openAdvanceModal() {
-            populateBusDropdowns();
-            document.getElementById('advanceModal').classList.remove('hidden');
-            document.getElementById('advanceForm').reset();
-            document.getElementById('advanceDate').valueAsDate = new Date();
-        }
-
-        function closeAdvanceModal() {
-            document.getElementById('advanceModal').classList.add('hidden');
-        }
-
-        function saveAdvance(e) {
-            e.preventDefault();
-            const advanceData = {
-                id: 'adv_' + Date.now(),
-                busId: document.getElementById('advanceBusId').value,
-                amount: Number(document.getElementById('advanceAmount').value),
-                date: document.getElementById('advanceDate').value,
-                reason: document.getElementById('advanceReason').value
-            };
-            state.advances.push(advanceData);
-            closeAdvanceModal();
-            saveData();
-        }
-
-        function deleteAdvance(id) {
-            if (confirm('هل أنت متأكد من حذف هذه السحبة؟')) {
-                state.advances = state.advances.filter(x => x.id !== id);
-                saveData();
-            }
-        }
-
-        // ATTENDANCE LOGIC
-        function renderAttendance() {
-            const tbody = document.getElementById('attendanceTableBody');
-            if (state.attendance.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">لا توجد غيابات أو خصومات مسجلة حالياً</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.attendance.map(at => {
-                const bus = state.buses.find(b => b.id === at.busId);
-                return `
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="p-4 font-bold text-indigo-900">${bus ? bus.name + ' (' + bus.driver + ')' : 'غير محدد'}</td>
-                        <td class="p-4 font-semibold">${at.person}</td>
-                        <td class="p-4 text-xs">${at.date}</td>
-                        <td class="p-4"><span class="${at.hasReplacement === 'yes' ? 'bg-emerald-50 text-emerald-700' : 'bg-rose-50 text-rose-700'} px-3 py-1 rounded-lg text-xs font-bold">${at.hasReplacement === 'yes' ? 'نعم (بديل موجود)' : 'لا (بدون بديل)'}</span></td>
-                        <td class="p-4 font-bold text-rose-800">${Number(at.deduction).toLocaleString()} ر.ي</td>
-                        <td class="p-4 text-center">
-                            <button onclick="deleteAttendance('${at.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function openAttendanceModal() {
-            populateBusDropdowns();
-            document.getElementById('attendanceModal').classList.remove('hidden');
-            document.getElementById('attendanceForm').reset();
-            document.getElementById('attendanceDate').valueAsDate = new Date();
-            toggleReplacementDeduction();
-        }
-
-        function closeAttendanceModal() {
-            document.getElementById('attendanceModal').classList.add('hidden');
-        }
-
-        function toggleReplacementDeduction() {
-            const val = document.getElementById('attendanceHasReplacement').value;
-            const container = document.getElementById('deductionAmountContainer');
-            if (val === 'no') {
-                container.classList.remove('hidden');
-            } else {
-                container.classList.add('hidden');
-                document.getElementById('attendanceDeduction').value = '0';
-            }
-        }
-
-        function saveAttendance(e) {
-            e.preventDefault();
-            const hasRep = document.getElementById('attendanceHasReplacement').value;
-            const deductionVal = hasRep === 'no' ? Number(document.getElementById('attendanceDeduction').value) : 0;
-            const attData = {
-                id: 'att_' + Date.now(),
-                busId: document.getElementById('attendanceBusId').value,
-                person: document.getElementById('attendancePerson').value,
-                date: document.getElementById('attendanceDate').value,
-                hasReplacement: hasRep,
-                deduction: deductionVal
-            };
-            state.attendance.push(attData);
-            closeAttendanceModal();
-            saveData();
-        }
-
-        function deleteAttendance(id) {
-            if (confirm('هل أنت متأكد من حذف هذا السجل؟')) {
-                state.attendance = state.attendance.filter(x => x.id !== id);
-                saveData();
-            }
-        }
-
-        // COMPLAINTS LOGIC
-        function renderComplaints() {
-            const tbody = document.getElementById('complaintsTableBody');
-            if (state.complaints.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">لا توجد شكاوى أو ملاحظات مسجلة حالياً</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.complaints.map(c => {
-                const bus = state.buses.find(b => b.id === c.busId);
-                let badgeColor = 'bg-amber-50 text-amber-700';
-                if (c.status === 'تم الحل والتحقيق') badgeColor = 'bg-emerald-50 text-emerald-700';
-                if (c.status === 'مؤجلة / تحت المراقبة') badgeColor = 'bg-rose-50 text-rose-700';
-                return `
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="p-4 font-bold text-purple-900">${bus ? bus.name + ' (' + bus.driver + ')' : 'غير محدد'}</td>
-                        <td class="p-4 font-semibold">${c.type}</td>
-                        <td class="p-4 text-xs text-slate-600 max-w-xs truncate">${c.text}</td>
-                        <td class="p-4 text-xs">${c.date}</td>
-                        <td class="p-4"><span class="${badgeColor} px-3 py-1 rounded-lg text-xs font-bold">${c.status}</span></td>
-                        <td class="p-4 text-center">
-                            <button onclick="deleteComplaint('${c.id}')" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer"><i class="fa-solid fa-trash"></i></button>
-                        </td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function openComplaintModal() {
-            populateBusDropdowns();
-            document.getElementById('complaintModal').classList.remove('hidden');
-            document.getElementById('complaintForm').reset();
-        }
-
-        function closeComplaintModal() {
-            document.getElementById('complaintModal').classList.add('hidden');
-        }
-
-        function saveComplaint(e) {
-            e.preventDefault();
-            const compData = {
-                id: 'comp_' + Date.now(),
-                busId: document.getElementById('complaintBusId').value,
-                type: document.getElementById('complaintType').value,
-                status: document.getElementById('complaintStatus').value,
-                text: document.getElementById('complaintText').value,
-                date: new Date().toISOString().split('T')[0]
-            };
-            state.complaints.push(compData);
-            closeComplaintModal();
-            saveData();
-        }
-
-        function deleteComplaint(id) {
-            if (confirm('هل أنت متأكد من حذف هذه الملاحظة؟')) {
-                state.complaints = state.complaints.filter(x => x.id !== id);
-                saveData();
-            }
-        }
-
-        // REPORTS LOGIC
-        function renderReports() {
-            const tbody = document.getElementById('reportsTableBody');
-            if (state.buses.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">لا توجد بيانات مالية للعرض</td></tr>`;
-                return;
-            }
-            tbody.innerHTML = state.buses.map(b => {
-                const studentsCount = state.students.filter(st => st.busId === b.id).length;
-                const totalAdvances = state.advances.filter(a => a.busId === b.id).reduce((sum, a) => sum + Number(a.amount), 0);
-                const totalDeductions = state.attendance.filter(at => at.busId === b.id).reduce((sum, at) => sum + Number(at.deduction), 0);
-                const netSalary = Number(b.salary) - totalAdvances - totalDeductions;
-                return `
-                    <tr class="hover:bg-slate-50/80 transition">
-                        <td class="p-4 font-bold text-indigo-900">${b.name}</td>
-                        <td class="p-4 font-semibold">${b.driver}</td>
-                        <td class="p-4 text-center"><span class="bg-amber-50 text-amber-700 px-3 py-1 rounded-lg text-xs font-bold">${studentsCount} طلاب</span></td>
-                        <td class="p-4 font-bold text-slate-700">${Number(b.salary).toLocaleString()} ر.ي</td>
-                        <td class="p-4 font-bold text-rose-600">${totalAdvances.toLocaleString()} ر.ي</td>
-                        <td class="p-4 font-bold text-rose-600">${totalDeductions.toLocaleString()} ر.ي</td>
-                        <td class="p-4 font-black text-emerald-700 text-base">${netSalary.toLocaleString()} ر.ي</td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        // EXPORT & IMPORT FOR CURRENT ACTIVE TAB ONLY (EXCEL / CSV)
-        function exportCurrentTabExcel() {
-            const tab = state.currentTab;
-            let csvContent = "\uFEFF"; // UTF-8 BOM for Arabic support in Excel
-            let filename = `export_${tab}_${new Date().toISOString().split('T')[0]}.csv`;
-            
-            if (tab === 'buses') {
-                csvContent += "اسم الباص,رقم اللوحة,اسم السائق,رقم الهاتف,الخط السير,الراتب الأساسي\n";
-                state.buses.forEach(b => {
-                    csvContent += `"${b.name}","${b.plate}","${b.driver}","${b.driverPhone}","${b.route}",${b.salary}\n`;
-                });
-            } else if (tab === 'staff') {
-                csvContent += "اسم الطاقم,رقم الهاتف,المسمى,معرف الباص\n";
-                state.staff.forEach(s => {
-                    csvContent += `"${s.name}","${s.phone}","${s.role}","${s.busId}"\n`;
-                });
-            } else if (tab === 'students') {
-                csvContent += "اسم الطالب,الصف,ولي الأمر,هاتف ولي الأمر,معرف الباص,العنوان\n";
-                state.students.forEach(st => {
-                    csvContent += `"${st.name}","${st.grade}","${st.parent}","${st.phone}","${st.busId}","${st.address}"\n`;
-                });
-            } else if (tab === 'advances') {
-                csvContent += "معرف الباص,المبلغ,التاريخ,السبب\n";
-                state.advances.forEach(a => {
-                    csvContent += `"${a.busId}",${a.amount},"${a.date}","${a.reason}"\n`;
-                });
-            } else if (tab === 'attendance') {
-                csvContent += "معرف الباص,الشخص الغائب,التاريخ,وجود بديل,الخصم الإداري\n";
-                state.attendance.forEach(at => {
-                    csvContent += `"${at.busId}","${at.person}","${at.date}","${at.hasReplacement}",${at.deduction}\n`;
-                });
-            } else if (tab === 'complaints') {
-                csvContent += "معرف الباص,النوع,الحالة,التاريخ,التفاصيل\n";
-                state.complaints.forEach(c => {
-                    csvContent += `"${c.busId}","${c.type}","${c.status}","${c.date}","${c.text}"\n`;
-                });
-            } else if (tab === 'reports') {
-                csvContent += "اسم الباص,السائق,الراتب الأساسي,إجمالي السحبيات,إجمالي الخصومات,الصافي\n";
-                state.buses.forEach(b => {
-                    const totalAdvances = state.advances.filter(a => a.busId === b.id).reduce((sum, a) => sum + Number(a.amount), 0);
-                    const totalDeductions = state.attendance.filter(at => at.busId === b.id).reduce((sum, at) => sum + Number(at.deduction), 0);
-                    const netSalary = Number(b.salary) - totalAdvances - totalDeductions;
-                    csvContent += `"${b.name}","${b.driver}",${b.salary},${totalAdvances},${totalDeductions},${netSalary}\n`;
-                });
-            } else {
-                alert('لا يمكن تصدير هذه القائمة');
-                return;
-            }
-
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
-            a.click();
-            URL.revokeObjectURL(url);
-        }
-
-        function importCurrentTabExcel(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const text = e.target.result;
-                const lines = text.split('\n').filter(l => l.trim() !== '');
-                if (lines.length < 2) {
-                    alert('ملف الإكسل فارغ أو غير صالح');
-                    return;
-                }
-                const tab = state.currentTab;
-                try {
-                    if (tab === 'buses') {
-                        state.buses = [];
-                        for (let i = 1; i < lines.length; i++) {
-                            const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
-                            if (cols.length >= 6) {
-                                state.buses.push({
-                                    id: 'b_' + Date.now() + '_' + i,
-                                    name: cols[0],
-                                    plate: cols[1],
-                                    driver: cols[2],
-                                    driverPhone: cols[3],
-                                    route: cols[4],
-                                    salary: Number(cols[5]) || 0
-                                });
-                            }
-                        }
-                    } else if (tab === 'staff') {
-                        state.staff = [];
-                        for (let i = 1; i < lines.length; i++) {
-                            const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
-                            if (cols.length >= 4) {
-                                state.staff.push({
-                                    id: 's_' + Date.now() + '_' + i,
-                                    name: cols[0],
-                                    phone: cols[1],
-                                    role: cols[2],
-                                    busId: cols[3]
-                                });
-                            }
-                        }
-                    } else if (tab === 'students') {
-                        state.students = [];
-                        for (let i = 1; i < lines.length; i++) {
-                            const cols = lines[i].split(',').map(c => c.replace(/^"|"$/g, '').trim());
-                            if (cols.length >= 6) {
-                                state.students.push({
-                                    id: 'st_' + Date.now() + '_' + i,
-                                    name: cols[0],
-                                    grade: cols[1],
-                                    parent: cols[2],
-                                    phone: cols[3],
-                                    busId: cols[4],
-                                    address: cols[5]
-                                });
-                            }
-                        }
-                    } else {
-                        alert('استيراد البيانات متاح حالياً لقوائم الباصات، الطاقم، والطلاب.');
-                        return;
-                    }
-                    saveData();
-                    alert('تم استيراد بيانات القائمة المفتوحة بنجاح!');
-                } catch (err) {
-                    console.error(err);
-                    alert('حدث خطأ أثناء قراءة ملف الإكسل.');
-                }
-                event.target.value = '';
-            };
-            reader.readAsText(file, 'UTF-8');
-        }
-
-        // Window Load
-        window.onload = function() {
-            loadData();
-            renderAll();
-        };
-    </script>
+    <!-- ملف الجافا سكريبت الخارجي -->
+    <script src="app.js"></script>
 </body>
-
 </html>
